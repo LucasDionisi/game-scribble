@@ -1,0 +1,26 @@
+{
+  "name": "scribble",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "type": "module",
+  "start": "npx nodemon server.js -e js,html,css",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LucasDionisi/scribble.git"
+  },
+  "author": "LDionisi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LucasDionisi/scribble/issues"
+  },
+  "homepage": "https://github.com/LucasDionisi/scribble#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-ws": "^5.0.2",
+    "nodemon": "^2.0.14"
+  }
+}
