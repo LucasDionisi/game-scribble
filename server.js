@@ -18,3 +18,7 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log('Example app listening at http://localhost:3000');
 });
+
+app.ws('/socket', (socket, req) => {
+    console.log('New socket connected');
+});
