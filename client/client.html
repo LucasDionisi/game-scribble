@@ -13,14 +13,40 @@
     <body>
         <h1>Scribble</h1>
 
-        <div id="div_pseudo">
+        <div id="div_pseudo" hidden>
             <p>Select your pseudo</p>
             <input type="text" id="input_pseudo">
             <button id="button_pseudo">Submit</button>
         </div>
 
-        <div id="div_game" hidden>
-            
+        <div id="div_game" class="container">
+            <div id="div_left">
+                score
+            </div>
+
+            <div id="div_middle">
+                <div id="div_word">
+                    word
+                </div>
+
+                <div id="div_canvas">
+                    canvas
+                </div>
+            </div>
+
+            <div id="div_right">
+                <div id="div_timer">
+                    timer
+                </div>
+
+                <div id="div_chat">
+                    chat
+                </div>
+
+                <div id="div_input_chat">
+                    input chat
+                </div>
+            </div>
         </div>
 
         <script src="client.js"></script>

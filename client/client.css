@@ -1,4 +1,5 @@
 #div_pseudo {
+    visibility: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -7,4 +8,51 @@
 #div_pseudo p {
     font-size: 1.5em;
     margin-right: 10px;
+}
+
+.container {
+    display: flex;
+}
+
+#div_left {
+    width: 20%;
+    margin-right: 2%;
+    border: solid;
+}
+
+#div_middle {
+    width: 50%;
+    margin-right: 2%;
+}
+
+#div_word {  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    border: solid;
+    margin-bottom: 10px;
+}
+
+#div_canvas {
+    border: solid;
+}
+
+#div_right {
+    width: 20%;
+    margin-right: 2%;
+}
+
+#div_timer {
+    border: solid;
+    margin-bottom: 10px;
+}
+
+#div_chat {
+    border: solid;
+    margin-bottom: 10px;
+}
+
+#div_input_chat {
+    border: solid;
 }
