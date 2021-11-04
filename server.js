@@ -6,8 +6,14 @@ const { SocketAdress } = require('net');
 const app = express();
 const port = 3000;
 
+expressWs(app);
+
+app.use(express.static('client'));
+
 app.get('/', (req, res) => {
     console.log("got request.");
+    const filePath = path.resolve("client/client.html")
+    res.sendFile(filePath);
 });
 
 app.listen(port, () => {
