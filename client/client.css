@@ -1,5 +1,4 @@
 #div_pseudo {
-    visibility: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -8,6 +7,10 @@
 #div_pseudo p {
     font-size: 1.5em;
     margin-right: 10px;
+}
+
+#div_game {
+    /* display: none; */
 }
 
 .container {

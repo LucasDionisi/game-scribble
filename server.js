@@ -29,6 +29,12 @@ app.ws('/socket', (socket, req) => {
             console.log("connection of ", json.pseudo, ".");
             sockets.push({socket: socket, pseudo: json.pseudo});
         }
+
+        if (json.action == "draw") {
+            for (let i = 0; i < sockets.length; i++) {
+                sockets[i].socket.send(message);
+            }
+        }
     });
 
     socket.on("close", (code) => {

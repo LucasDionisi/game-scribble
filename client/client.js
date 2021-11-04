@@ -12,7 +12,11 @@ function connectWebSocket(pseudo) {
     }
 
     socket.onmessage = (message) => {
-        console.log(message);
+        let json = JSON.parse(message.data);
+
+        if (json.action == "draw") {
+            drawLine(json);
+        }
     }
 
     socket.onclose = () => {
@@ -26,6 +30,9 @@ function connectWebSocket(pseudo) {
     return socket;
 }
 
+//===========================================================================
+//===========================================================================
+
 document.getElementById('button_pseudo').onclick = function () {
     const inputPseudo = document.getElementById('input_pseudo');
     let pseudo = inputPseudo.value;
@@ -34,7 +41,63 @@ document.getElementById('button_pseudo').onclick = function () {
         inputPseudo.value = "";
 
         socket = connectWebSocket(pseudo);
-        document.getElementById('div_pseudo').style.visibility = "hidden";
-        document.getElementById('div_game').style.visibility = "visible";
+        document.getElementById('div_pseudo').style.display = "none";
+        document.getElementById('div_game').style.display =  "flex";
     }
+}
+
+//===========================================================================
+//===========================================================================
+
+const canvas = document.getElementsByTagName("canvas")[0];
+const ctx = canvas.getContext("2d");
+
+let isDrawing = false;
+let isMyTurn = false;
+
+let x = 0, y = 0;
+
+ctx.fillStyle = "#FFFFFF";
+
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+canvas.addEventListener('mousedown', e => {
+    x = e.clientX - canvas.getBoundingClientRect().x;
+    y = e.clientY - canvas.getBoundingClientRect().y;
+
+    isDrawing = true;
+});
+
+canvas.addEventListener('mousemove', e => {
+    if (isDrawing) {
+        sendDrawLine(x, y, e.clientX - canvas.getBoundingClientRect().x, e.clientY - canvas.getBoundingClientRect().y);
+        x = e.clientX - canvas.getBoundingClientRect().x;
+        y = e.clientY - canvas.getBoundingClientRect().y;
+    }
+});
+
+window.addEventListener('mouseup', e => {
+    if (isDrawing) {
+        sendDrawLine(x, y, e.clientX - canvas.getBoundingClientRect().x, e.clientY - canvas.getBoundingClientRect().y);
+        x = 0;
+        y = 0;
+        isDrawing = false;
+    }
+});
+
+function sendDrawLine(x1, y1, x2, y2) {
+    let action = "draw";
+    let json = {action: action, color: "black", x1: x1, y1: y1, x2: x2, y2: y2};
+    socket.send(JSON.stringify(json));
+}
+
+function drawLine(json) {
+    ctx.beginPath();
+    ctx.strokeStyle = json.color;
+    ctx.lineWidth = 2;
+    ctx.lineCap = "round";
+    ctx.moveTo(json.x1, json.y1);
+    ctx.lineTo(json.x2, json.y2);
+    ctx.stroke();
+    ctx.closePath();
 }
