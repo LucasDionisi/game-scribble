@@ -6,7 +6,9 @@ function connectWebSocket(pseudo) {
 
     socket.onopen = () => {
         console.log("Socket connected.");
-        // socket.send(pseudo);
+        
+        let json = {action: "connection", pseudo: pseudo};
+        socket.send(JSON.stringify(json));
     }
 
     socket.onmessage = (message) => {
@@ -27,7 +29,12 @@ function connectWebSocket(pseudo) {
 document.getElementById('button_pseudo').onclick = function () {
     const inputPseudo = document.getElementById('input_pseudo');
     let pseudo = inputPseudo.value;
-    inputPseudo.value = "";
+    
+    if (pseudo != "") {
+        inputPseudo.value = "";
 
-    socket = connectWebSocket(pseudo);
+        socket = connectWebSocket(pseudo);
+        document.getElementById('div_pseudo').style.visibility = "hidden";
+        document.getElementById('div_game').style.visibility = "visible";
+    }
 }

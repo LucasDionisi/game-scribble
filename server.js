@@ -19,6 +19,26 @@ app.listen(port, () => {
     console.log('Example app listening at http://localhost:3000');
 });
 
+let sockets = [];
+
 app.ws('/socket', (socket, req) => {
-    console.log('New socket connected');
+    socket.on("message", (message) => {
+        let json = JSON.parse(message);
+
+        if (json.action == "connection") {
+            console.log("connection of ", json.pseudo, ".");
+            sockets.push({socket: socket, pseudo: json.pseudo});
+        }
+    });
+
+    socket.on("close", (code) => {
+        const index = sockets.indexOf(socket);
+        if (index > -1) {
+            sockets.slice(index, 1);
+        }
+    });
+
+    socket.on("error", (error) => {
+        console.error("Socket error: ", error);
+    });
 });
