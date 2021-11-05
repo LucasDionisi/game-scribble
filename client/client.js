@@ -1,13 +1,15 @@
 let socket;
+let myPseudo;
 
 function connectWebSocket(pseudo) {
     const url = `ws://${window.location.host}/socket`;
     socket = new WebSocket(url);
+    myPseudo = pseudo;
 
     socket.onopen = () => {
         console.log("Socket connected.");
         
-        let json = {action: "connection", pseudo: pseudo};
+        let json = {action: "connection", pseudo: myPseudo};
         socket.send(JSON.stringify(json));
     }
 
@@ -22,6 +24,9 @@ function connectWebSocket(pseudo) {
             isPLaying = true;
             document.getElementById('div_cog').style.display = "none";
             document.getElementById('div_game').style.display = "flex";
+            if (json.drawer == myPseudo) {
+                isMyTurn = true;
+            }
         }
     }
 
@@ -93,7 +98,7 @@ window.addEventListener('mouseup', e => {
 });
 
 function sendDrawLine(x1, y1, x2, y2) {
-    if (isPLaying) {
+    if (isPLaying && isMyTurn) {
         let action = "draw";
         let json = {action: action, color: "black", x1: x1, y1: y1, x2: x2, y2: y2};
         socket.send(JSON.stringify(json));

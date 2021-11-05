@@ -21,6 +21,7 @@ app.listen(port, () => {
 
 let sockets = [];
 const NB_PLAYERS_TO_PLAY = 2;
+let indexOfDrawer = 0;
 
 app.ws('/socket', (socket, req) => {
     socket.on("message", (message) => {
@@ -32,7 +33,7 @@ app.ws('/socket', (socket, req) => {
 
             if (sockets.length >= NB_PLAYERS_TO_PLAY) {
                 for (let i = 0; i < sockets.length; i++) {
-                    sockets[i].socket.send(JSON.stringify({action: "play"}));
+                    sockets[i].socket.send(JSON.stringify({action: "play", drawer: sockets[indexOfDrawer].pseudo}));
                 }
             }
         }
