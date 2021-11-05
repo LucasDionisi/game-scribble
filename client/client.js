@@ -17,6 +17,12 @@ function connectWebSocket(pseudo) {
         if (json.action == "draw") {
             drawLine(json);
         }
+
+        if (json.action == "play") {
+            isPLaying = true;
+            document.getElementById('div_cog').style.display = "none";
+            document.getElementById('div_game').style.display = "flex";
+        }
     }
 
     socket.onclose = () => {
@@ -42,7 +48,7 @@ document.getElementById('button_pseudo').onclick = function () {
 
         socket = connectWebSocket(pseudo);
         document.getElementById('div_pseudo').style.display = "none";
-        document.getElementById('div_game').style.display =  "flex";
+        document.getElementById('div_cog').style.display =  "flex";
     }
 }
 
@@ -52,6 +58,7 @@ document.getElementById('button_pseudo').onclick = function () {
 const canvas = document.getElementsByTagName("canvas")[0];
 const ctx = canvas.getContext("2d");
 
+let isPLaying = false;
 let isDrawing = false;
 let isMyTurn = false;
 
@@ -86,20 +93,24 @@ window.addEventListener('mouseup', e => {
 });
 
 function sendDrawLine(x1, y1, x2, y2) {
-    let action = "draw";
-    let json = {action: action, color: "black", x1: x1, y1: y1, x2: x2, y2: y2};
-    socket.send(JSON.stringify(json));
+    if (isPLaying) {
+        let action = "draw";
+        let json = {action: action, color: "black", x1: x1, y1: y1, x2: x2, y2: y2};
+        socket.send(JSON.stringify(json));
+    }
 }
 
 function drawLine(json) {
-    ctx.beginPath();
-    ctx.strokeStyle = json.color;
-    ctx.lineWidth = 2;
-    ctx.lineCap = "round";
-    ctx.moveTo(json.x1, json.y1);
-    ctx.lineTo(json.x2, json.y2);
-    ctx.stroke();
-    ctx.closePath();
+    if (isPLaying) {
+        ctx.beginPath();
+        ctx.strokeStyle = json.color;
+        ctx.lineWidth = 2;
+        ctx.lineCap = "round";
+        ctx.moveTo(json.x1, json.y1);
+        ctx.lineTo(json.x2, json.y2);
+        ctx.stroke();
+        ctx.closePath();
+    }
 }
 
 

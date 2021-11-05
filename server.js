@@ -28,6 +28,12 @@ app.ws('/socket', (socket, req) => {
         if (json.action == "connection") {
             console.log("connection of ", json.pseudo, ".");
             sockets.push({socket: socket, pseudo: json.pseudo});
+
+            if (sockets.length >= 2) {
+                for (let i = 0; i < sockets.length; i++) {
+                    sockets[i].socket.send(JSON.stringify({action: "play"}));
+                }
+            }
         }
 
         if (json.action == "draw") {

@@ -9,8 +9,12 @@
     margin-right: 10px;
 }
 
+#div_cog {
+    display: none;
+}
+
 #div_game {
-    /* display: none; */
+    display: none;
 }
 
 .container {
