@@ -20,6 +20,7 @@ app.listen(port, () => {
 });
 
 let sockets = [];
+const NB_PLAYERS_TO_PLAY = 2;
 
 app.ws('/socket', (socket, req) => {
     socket.on("message", (message) => {
@@ -29,7 +30,7 @@ app.ws('/socket', (socket, req) => {
             console.log("connection of ", json.pseudo, ".");
             sockets.push({socket: socket, pseudo: json.pseudo});
 
-            if (sockets.length >= 2) {
+            if (sockets.length >= NB_PLAYERS_TO_PLAY) {
                 for (let i = 0; i < sockets.length; i++) {
                     sockets[i].socket.send(JSON.stringify({action: "play"}));
                 }
