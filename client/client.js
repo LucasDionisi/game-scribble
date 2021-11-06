@@ -119,7 +119,7 @@ window.addEventListener('mouseup', e => {
 function sendDrawLine(x1, y1, x2, y2) {
     if (isPLaying && isMyTurn) {
         let action = "draw";
-        let json = {action: action, color: "black", x1: x1, y1: y1, x2: x2, y2: y2};
+        let json = {action: action, color: document.getElementById('input_color').value, x1: x1, y1: y1, x2: x2, y2: y2};
         socket.send(JSON.stringify(json));
     }
 }
