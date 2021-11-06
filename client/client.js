@@ -24,7 +24,7 @@ function connectWebSocket(pseudo) {
             isPLaying = true;
             document.getElementById('div_cog').style.display = "none";
             document.getElementById('div_game').style.display = "flex";
-            document.getElementById('div_toolbar').style.display = "flex";
+            document.getElementById('div_toolbar').style.display = "block";
             document.getElementById('div_word').innerHTML = json.word;
             isMyTurn = json.drawer == myPseudo;
             updateScore(json.scores);
@@ -119,7 +119,7 @@ window.addEventListener('mouseup', e => {
 function sendDrawLine(x1, y1, x2, y2) {
     if (isPLaying && isMyTurn) {
         let action = "draw";
-        let json = {action: action, color: document.getElementById('input_color').value, x1: x1, y1: y1, x2: x2, y2: y2};
+        let json = {action: action, lineWidth: document.getElementById('range').value, color: document.getElementById('input_color').value, x1: x1, y1: y1, x2: x2, y2: y2};
         socket.send(JSON.stringify(json));
     }
 }
@@ -128,7 +128,7 @@ function drawLine(json) {
     if (isPLaying) {
         ctx.beginPath();
         ctx.strokeStyle = json.color;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = json.lineWidth;
         ctx.lineCap = "round";
         ctx.moveTo(json.x1, json.y1);
         ctx.lineTo(json.x2, json.y2);
