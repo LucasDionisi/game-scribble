@@ -121,3 +121,12 @@ function drawLine(json) {
 
 //===========================================================================
 //===========================================================================
+
+function sendInputchat() {
+    if (event.keyCode == 13) {
+        let elem = document.getElementById('input_chat');
+        let value = elem.value;
+        elem.value = "";
+        
+    }
+}
