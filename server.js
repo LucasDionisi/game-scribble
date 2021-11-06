@@ -72,12 +72,14 @@ app.ws('/socket', (socket, req) => {
 
                 indexOfDrawer = (indexOfDrawer + 1) % sockets.length;
 
+                let msg = "<i>server: " +json.pseudo +" find the word!</i>";
+
                 for (let i = 0; i < sockets.length; i++) {
                     if (scores[i].pseudo == json.pseudo) {
                         scores[i].score += 1;
                     }
                     
-                    sockets[i].socket.send(JSON.stringify({action: "find", word: prevWord, message: json.message, pseudo: json.pseudo, drawer: sockets[indexOfDrawer].pseudo, scores: scores}));
+                    sockets[i].socket.send(JSON.stringify({action: "find", word: prevWord, message: msg, pseudo: json.pseudo, drawer: sockets[indexOfDrawer].pseudo, scores: scores}));
                 }
             } else {
                 for (let i = 0; i < sockets.length; i++) {
