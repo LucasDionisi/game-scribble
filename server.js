@@ -31,12 +31,14 @@ app.ws('/socket', (socket, req) => {
     socket.on("message", (message) => {
         let json = JSON.parse(message);
 
+        // console.log(message);
+
         if (json.action == "connection") {
             console.log("connection of ", json.pseudo, ".");
             sockets.push({socket: socket, pseudo: json.pseudo});
 
             if ((sockets.length >= NB_PLAYERS_TO_PLAY) && !isPlaying) {
-                isPLaying = true; 
+                isPlaying = true; 
                 let indexOfWord = Math.floor(Math.random() * words.length);
                 prevWord = words[indexOfWord];
                 words.slice(indexOfWord, 1);
@@ -50,6 +52,12 @@ app.ws('/socket', (socket, req) => {
         }
 
         if (json.action == "draw") {
+            for (let i = 0; i < sockets.length; i++) {
+                sockets[i].socket.send(message);
+            }
+        }
+
+        if (json.action == "chat") {
             for (let i = 0; i < sockets.length; i++) {
                 sockets[i].socket.send(message);
             }

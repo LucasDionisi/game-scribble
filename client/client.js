@@ -29,6 +29,10 @@ function connectWebSocket(pseudo) {
                 isMyTurn = true;
             }
         }
+
+        if (json.action == "chat") {
+            addInChat(json.message);
+        }
     }
 
     socket.onclose = () => {
@@ -129,6 +133,14 @@ function sendInputchat() {
         let elem = document.getElementById('input_chat');
         let value = elem.value;
         elem.value = "";
-        
+
+        let message = myPseudo +": " +value +"<br>";
+        let json = {action: "chat", message: message, pseudo: myPseudo};
+
+        socket.send(JSON.stringify(json));
     }
+}
+
+function addInChat(message) {
+    document.getElementById('div_chat').innerHTML += message;
 }

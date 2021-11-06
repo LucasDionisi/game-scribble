@@ -58,6 +58,7 @@
 #div_chat {
     border: solid;
     margin-bottom: 10px;
+    height: 520px;
 }
 
 #div_input_chat {
