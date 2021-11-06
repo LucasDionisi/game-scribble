@@ -25,13 +25,18 @@ function connectWebSocket(pseudo) {
             document.getElementById('div_cog').style.display = "none";
             document.getElementById('div_game').style.display = "flex";
             document.getElementById('div_word').innerHTML = json.word;
-            if (json.drawer == myPseudo) {
-                isMyTurn = true;
-            }
+            isMyTurn = json.drawer == myPseudo;
         }
 
         if (json.action == "chat") {
             addInChat(json.message);
+        }
+
+        if (json.action == "find") {
+            addInChat(json.message);
+            document.getElementById('div_word').innerHTML = json.word;
+            isMyTurn = json.drawer == myPseudo;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
     }
 
@@ -135,7 +140,7 @@ function sendInputchat() {
         elem.value = "";
 
         let message = myPseudo +": " +value +"<br>";
-        let json = {action: "chat", message: message, pseudo: myPseudo};
+        let json = {action: "chat", message: message, word: value, pseudo: myPseudo};
 
         socket.send(JSON.stringify(json));
     }

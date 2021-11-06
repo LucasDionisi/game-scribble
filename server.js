@@ -58,8 +58,22 @@ app.ws('/socket', (socket, req) => {
         }
 
         if (json.action == "chat") {
-            for (let i = 0; i < sockets.length; i++) {
-                sockets[i].socket.send(message);
+            let msgRcv = json.word;
+
+            if ((sockets[indexOfDrawer].pseudo != json.pseudo) && (msgRcv.toLowerCase() == prevWord.toLowerCase())) {
+                let indexOfWord = Math.floor(Math.random() * words.length);
+                prevWord = words[indexOfWord];
+                words.slice(indexOfWord, 1);
+
+                indexOfDrawer = (indexOfDrawer + 1) % sockets.length;
+
+                for (let i = 0; i < sockets.length; i++) {
+                    sockets[i].socket.send(JSON.stringify({action: "find", word: prevWord, message: json.message, pseudo: json.pseudo, drawer: sockets[indexOfDrawer].pseudo}));
+                }
+            } else {
+                for (let i = 0; i < sockets.length; i++) {
+                    sockets[i].socket.send(message);
+                }
             }
         }
     });
