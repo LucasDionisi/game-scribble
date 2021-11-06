@@ -45,6 +45,13 @@ function connectWebSocket(pseudo) {
             isMyTurn = json.drawer == myPseudo;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
+
+        if (json.action == "timer") {
+            addInChat(json.message);
+            document.getElementById('div_word').innerHTML = json.word;
+            isMyTurn = json.drawer == myPseudo;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
     }
 
     socket.onclose = () => {

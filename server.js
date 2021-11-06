@@ -40,6 +40,8 @@ app.ws('/socket', (socket, req) => {
             if ((sockets.length >= NB_PLAYERS_TO_PLAY) && !isPlaying) {
                 isPlaying = true;
 
+                setTimer();
+
                 let indexOfWord = Math.floor(Math.random() * words.length);
                 prevWord = words[indexOfWord];
                 words.slice(indexOfWord, 1);
@@ -101,3 +103,22 @@ app.ws('/socket', (socket, req) => {
         console.error("Socket error: ", error);
     });
 });
+
+const TIME_PER_DRAW = 10 * 1000;
+
+function setTimer() {
+    setInterval(function () {
+        let indexOfWord = Math.floor(Math.random() * words.length);
+        prevWord = words[indexOfWord];
+        words.slice(indexOfWord, 1);
+
+        indexOfDrawer = (indexOfDrawer + 1) % sockets.length;
+
+        let msg = "<p style=\"color: red;\"><i>server: timeout!</i></p>";
+
+        for (let i = 0; i < sockets.length; i++) {
+            sockets[i].socket.send(JSON.stringify({action: "timer", word: prevWord, message: msg, drawer: sockets[indexOfDrawer].pseudo}));
+        }
+
+    }, TIME_PER_DRAW);
+}
