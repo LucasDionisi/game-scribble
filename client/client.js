@@ -45,16 +45,18 @@ function connectWebSocket(pseudo) {
 //===========================================================================
 //===========================================================================
 
-document.getElementById('button_pseudo').onclick = function () {
-    const inputPseudo = document.getElementById('input_pseudo');
-    let pseudo = inputPseudo.value;
-    
-    if (pseudo != "") {
-        inputPseudo.value = "";
+function sendInputPseudo() {
+    if (event.keyCode == 13) {
+        const inputPseudo = document.getElementById('input_pseudo');
+        let pseudo = inputPseudo.value;
+        
+        if (pseudo != "") {
+            inputPseudo.value = "";
 
-        socket = connectWebSocket(pseudo);
-        document.getElementById('div_pseudo').style.display = "none";
-        document.getElementById('div_cog').style.display =  "flex";
+            socket = connectWebSocket(pseudo);
+            document.getElementById('div_pseudo').style.display = "none";
+            document.getElementById('div_cog').style.display =  "flex";
+        }
     }
 }
 
