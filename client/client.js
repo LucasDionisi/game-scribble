@@ -26,6 +26,11 @@ function connectWebSocket(pseudo) {
             document.getElementById('div_game').style.display = "flex";
             document.getElementById('div_word').innerHTML = json.word;
             isMyTurn = json.drawer == myPseudo;
+            updateScore(json.scores);
+        }
+
+        if (json.action == "newPlayer") {
+            updateScore(json.scores);
         }
 
         if (json.action == "chat") {
@@ -34,6 +39,7 @@ function connectWebSocket(pseudo) {
 
         if (json.action == "find") {
             addInChat(json.message);
+            updateScore(json.scores);
             document.getElementById('div_word').innerHTML = json.word;
             isMyTurn = json.drawer == myPseudo;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -148,4 +154,19 @@ function sendInputchat() {
 
 function addInChat(message) {
     document.getElementById('div_chat').innerHTML += message;
+}
+
+//===========================================================================
+//===========================================================================
+
+function updateScore(scores) {
+    let str = "";
+
+    console.log(scores);
+    
+    for (let i = 0; i < scores.length; i++) {
+        str += scores[i].pseudo +": " +scores[i].score +"pts" +"<br>";
+    }
+    
+    document.getElementById('div_left').innerHTML = str;
 }

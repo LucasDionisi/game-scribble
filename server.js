@@ -20,6 +20,8 @@ app.listen(port, () => {
 });
 
 let sockets = [];
+let scores = [];
+
 const NB_PLAYERS_TO_PLAY = 2;
 let indexOfDrawer = 0;
 
@@ -30,24 +32,27 @@ let isPlaying = false;
 app.ws('/socket', (socket, req) => {
     socket.on("message", (message) => {
         let json = JSON.parse(message);
-
-        // console.log(message);
-
         if (json.action == "connection") {
             console.log("connection of ", json.pseudo, ".");
             sockets.push({socket: socket, pseudo: json.pseudo});
+            scores.push({pseudo: json.pseudo, score: 0});
 
             if ((sockets.length >= NB_PLAYERS_TO_PLAY) && !isPlaying) {
-                isPlaying = true; 
+                isPlaying = true;
+
                 let indexOfWord = Math.floor(Math.random() * words.length);
                 prevWord = words[indexOfWord];
                 words.slice(indexOfWord, 1);
 
                 for (let i = 0; i < sockets.length; i++) {
-                    sockets[i].socket.send(JSON.stringify({action: "play", drawer: sockets[indexOfDrawer].pseudo, word: prevWord}));
+                    sockets[i].socket.send(JSON.stringify({action: "play", drawer: sockets[indexOfDrawer].pseudo, word: prevWord, scores: scores}));
                 }
             } else if (sockets.length >= NB_PLAYERS_TO_PLAY) {
-                socket.send(JSON.stringify({action: "play", drawer: json.pseudo, word: prevWord}));
+                socket.send(JSON.stringify({action: "play", drawer: json.pseudo, word: prevWord, scores: scores}));
+
+                for(let i = 0; i < sockets.length; i++) {
+                    sockets[i].socket.send(JSON.stringify({action: "newPlayer", scores: scores}));
+                }
             }
         }
 
@@ -68,7 +73,11 @@ app.ws('/socket', (socket, req) => {
                 indexOfDrawer = (indexOfDrawer + 1) % sockets.length;
 
                 for (let i = 0; i < sockets.length; i++) {
-                    sockets[i].socket.send(JSON.stringify({action: "find", word: prevWord, message: json.message, pseudo: json.pseudo, drawer: sockets[indexOfDrawer].pseudo}));
+                    if (scores[i].pseudo == json.pseudo) {
+                        scores[i].score += 1;
+                    }
+                    
+                    sockets[i].socket.send(JSON.stringify({action: "find", word: prevWord, message: json.message, pseudo: json.pseudo, drawer: sockets[indexOfDrawer].pseudo, scores: scores}));
                 }
             } else {
                 for (let i = 0; i < sockets.length; i++) {
@@ -82,6 +91,7 @@ app.ws('/socket', (socket, req) => {
         const index = sockets.indexOf(socket);
         if (index > -1) {
             sockets.slice(index, 1);
+            scores.slice(index, 1);
         }
     });
 
