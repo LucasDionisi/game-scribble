@@ -24,6 +24,7 @@ function connectWebSocket(pseudo) {
             isPLaying = true;
             document.getElementById('div_cog').style.display = "none";
             document.getElementById('div_game').style.display = "flex";
+            document.getElementById('div_toolbar').style.display = "flex";
             document.getElementById('div_word').innerHTML = json.word;
             isMyTurn = json.drawer == myPseudo;
             updateScore(json.scores);

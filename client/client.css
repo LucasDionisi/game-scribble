@@ -17,6 +17,10 @@
     display: none;
 }
 
+#div_toolbar {
+    display: none;
+}
+
 .container {
     display: flex;
 }
