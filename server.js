@@ -28,14 +28,15 @@ let indexOfDrawer = 0;
 let words = ["apple", "house", "flower", "cat", "dog", "computer", "boat", "beer", "guitar", "tree", "fish"];
 let prevWord;
 let isPlaying = false;
+let timerAlreadySet = false;
 
 app.ws('/socket', (socket, req) => {
     socket.on("message", (message) => {
         let json = JSON.parse(message);
         if (json.action == "connection") {
             console.log("connection of ", json.pseudo, ".");
-            sockets.push({socket: socket, pseudo: json.pseudo});
-            scores.push({pseudo: json.pseudo, score: 0});
+            sockets.push({ socket: socket, pseudo: json.pseudo });
+            scores.push({ pseudo: json.pseudo, score: 0 });
 
             if ((sockets.length >= NB_PLAYERS_TO_PLAY) && !isPlaying) {
                 isPlaying = true;
@@ -47,13 +48,13 @@ app.ws('/socket', (socket, req) => {
                 words.slice(indexOfWord, 1);
 
                 for (let i = 0; i < sockets.length; i++) {
-                    sockets[i].socket.send(JSON.stringify({action: "play", drawer: sockets[indexOfDrawer].pseudo, word: prevWord, scores: scores}));
+                    sockets[i].socket.send(JSON.stringify({ action: "play", drawer: sockets[indexOfDrawer].pseudo, word: prevWord, scores: scores }));
                 }
             } else if (sockets.length >= NB_PLAYERS_TO_PLAY) {
-                socket.send(JSON.stringify({action: "play", drawer: json.pseudo, word: prevWord, scores: scores}));
+                socket.send(JSON.stringify({ action: "play", drawer: json.pseudo, word: prevWord, scores: scores }));
 
-                for(let i = 0; i < sockets.length; i++) {
-                    sockets[i].socket.send(JSON.stringify({action: "newPlayer", scores: scores}));
+                for (let i = 0; i < sockets.length; i++) {
+                    sockets[i].socket.send(JSON.stringify({ action: "newPlayer", scores: scores }));
                 }
             }
         }
@@ -74,14 +75,14 @@ app.ws('/socket', (socket, req) => {
 
                 indexOfDrawer = (indexOfDrawer + 1) % sockets.length;
 
-                let msg = "<i>server: " +json.pseudo +" find the word!</i>";
+                let msg = "<i>server: " + json.pseudo + " find the word!</i>";
 
                 for (let i = 0; i < sockets.length; i++) {
                     if (scores[i].pseudo == json.pseudo) {
                         scores[i].score += 1;
                     }
-                    
-                    sockets[i].socket.send(JSON.stringify({action: "find", word: prevWord, message: msg, pseudo: json.pseudo, drawer: sockets[indexOfDrawer].pseudo, scores: scores}));
+
+                    sockets[i].socket.send(JSON.stringify({ action: "find", word: prevWord, message: msg, pseudo: json.pseudo, drawer: sockets[indexOfDrawer].pseudo, scores: scores }));
                 }
             } else {
                 for (let i = 0; i < sockets.length; i++) {
@@ -104,21 +105,46 @@ app.ws('/socket', (socket, req) => {
     });
 });
 
-const TIME_PER_DRAW = 10 * 1000;
+const TIME_PER_DRAW = 60 * 1000;
+let startOfTimer = -1;
 
 function setTimer() {
-    setInterval(function () {
-        let indexOfWord = Math.floor(Math.random() * words.length);
-        prevWord = words[indexOfWord];
-        words.slice(indexOfWord, 1);
-
-        indexOfDrawer = (indexOfDrawer + 1) % sockets.length;
-
-        let msg = "<p style=\"color: red;\"><i>server: timeout!</i></p>";
+    if (startOfTimer != -1) {
+        let endOfTimer = startOfTimer + TIME_PER_DRAW;
 
         for (let i = 0; i < sockets.length; i++) {
-            sockets[i].socket.send(JSON.stringify({action: "timer", word: prevWord, message: msg, drawer: sockets[indexOfDrawer].pseudo}));
+            sockets[i].socket.send(JSON.stringify({ action: "timer", startOfTimer: startOfTimer, endOfTimer: endOfTimer }));
         }
+    }
 
-    }, TIME_PER_DRAW);
+    if (!timerAlreadySet) {
+        timerAlreadySet = true;
+        startOfTimer = Date.now();
+
+        sendTimer(false);
+
+        setInterval(function () {
+            sendTimer(true);
+        }, TIME_PER_DRAW);
+    }
+}
+
+function sendTimer(hasMessage) {
+    let indexOfWord = Math.floor(Math.random() * words.length);
+    prevWord = words[indexOfWord];
+    words.slice(indexOfWord, 1);
+
+    indexOfDrawer = (indexOfDrawer + 1) % sockets.length;
+
+    let msg = "";
+
+    if (hasMessage) {
+        msg = "<p style=\"color: red;\"><i>server: timeout!</i></p>";
+    }
+
+    for (let i = 0; i < sockets.length; i++) {
+        sockets[i].socket.send(JSON.stringify({ action: "timeout", word: prevWord, message: msg, drawer: sockets[indexOfDrawer].pseudo, startOfTimer: startOfTimer, endOfTimer: startOfTimer + TIME_PER_DRAW }));
+    }
+
+    startOfTimer = Date.now();
 }

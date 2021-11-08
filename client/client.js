@@ -1,5 +1,6 @@
 let socket;
 let myPseudo;
+let timeLeft;
 
 function connectWebSocket(pseudo) {
     const url = `ws://${window.location.host}/socket`;
@@ -46,12 +47,21 @@ function connectWebSocket(pseudo) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
-        if (json.action == "timer") {
+        if (json.action == "timeout") {
             addInChat(json.message);
             document.getElementById('div_word').innerHTML = json.word;
             isMyTurn = json.drawer == myPseudo;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            timeLeft = Math.ceil((json.endOfTimer - json.startOfTimer)/1000);
+            showTimer();
         }
+
+        if (json.action == "timer") {
+            timeLeft = Math.ceil((json.endOfTimer - json.startOfTimer)/1000);
+            showTimer();
+        }
+
+        console.log(JSON.stringify(json));
     }
 
     socket.onclose = () => {
@@ -178,4 +188,19 @@ function updateScore(scores) {
     }
     
     document.getElementById('div_left').innerHTML = str;
+}
+
+//===========================================================================
+//===========================================================================
+
+let alreadyStart = false;
+
+function showTimer() {
+    if (!alreadyStart) {
+        alreadyStart = true;
+        setInterval(function () {
+            timeLeft--;
+            document.getElementById('div_timer').innerHTML = timeLeft;    
+        }, 1000);
+    }
 }
